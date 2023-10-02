@@ -1,0 +1,180 @@
+[gd_scene load_steps=19 format=2]
+
+[ext_resource path="res://terrain/HUD.tscn" type="PackedScene" id=1]
+[ext_resource path="res://terrain/TerrainTool.gd" type="Script" id=2]
+[ext_resource path="res://themes/default.tres" type="Resource" id=3]
+[ext_resource path="res://terrain/ThirdPersonCamera.gd" type="Script" id=4]
+[ext_resource path="res://terrain/terrain.gdns" type="Script" id=5]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type spatial;
+render_mode cull_back, diffuse_lambert, specular_disabled;
+
+uniform bool show_grid = true;
+uniform vec4 main_color:hint_color = vec4(0.5, 0.5, 0.5, 1.0);
+uniform vec4 grid_color:hint_color = vec4(1.0);
+uniform float grid_width:hint_range(0.01, 1.0) = 0.05;
+varying vec3 vert;
+varying float dist_from_camera;
+varying float lod;
+
+void vertex () {
+	vert = VERTEX;
+	vec3 world_vert = (WORLD_MATRIX * vec4(vert, 1.0)).xyz;
+	dist_from_camera = length(world_vert - CAMERA_MATRIX[3].xyz);
+	lod = smoothstep(10.0, 50.0, dist_from_camera);
+}
+
+
+void fragment () {
+	float grid_width_adjusted = grid_width * (lod * 0.75 + 0.25);
+	float grid_width_inv = 1.0 - grid_width_adjusted;
+	float grid = float( show_grid && 
+		(fract(vert.x) < grid_width_adjusted ||
+		fract(vert.x) > grid_width_inv ||
+		fract(vert.z) < grid_width_adjusted ||
+		fract(vert.z) > grid_width_inv)
+	);
+	
+	float NdotV = clamp(dot(NORMAL, VIEW), 0.0, 1.0);
+	ALBEDO = mix(main_color, grid_color, grid * NdotV * (1.0 - lod)).rgb * (NdotV * 0.5  + 0.5);
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+shader_param/show_grid = true
+shader_param/main_color = Color( 0.501961, 0.501961, 0.501961, 1 )
+shader_param/grid_color = Color( 1, 1, 1, 1 )
+shader_param/grid_width = 0.1
+
+[sub_resource type="Resource" id=3]
+script = ExtResource( 5 )
+num_chunks = 64
+chunk_size = 0
+
+[sub_resource type="HeightMapShape" id=4]
+map_width = 25
+map_depth = 25
+map_data = PoolRealArray( 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 )
+
+[sub_resource type="PlaneMesh" id=5]
+size = Vector2( 0.005, 100 )
+
+[sub_resource type="SpatialMaterial" id=6]
+flags_unshaded = true
+flags_fixed_size = true
+albedo_color = Color( 1, 0, 0, 1 )
+
+[sub_resource type="PlaneMesh" id=7]
+size = Vector2( 100, 0.005 )
+
+[sub_resource type="SpatialMaterial" id=8]
+flags_unshaded = true
+flags_fixed_size = true
+albedo_color = Color( 0, 0, 1, 1 )
+
+[sub_resource type="ProceduralSky" id=9]
+sky_top_color = Color( 0.647059, 0.839216, 0.945098, 1 )
+sky_horizon_color = Color( 0.839216, 0.917647, 0.980392, 1 )
+sky_curve = 0.5
+ground_bottom_color = Color( 0.647059, 0.839216, 0.945098, 1 )
+ground_horizon_color = Color( 0.839216, 0.917647, 0.980392, 1 )
+ground_curve = 0.5
+sun_angle_min = 0.0
+sun_angle_max = 0.0
+sun_curve = 0.0025
+texture_size = 1
+
+[sub_resource type="Environment" id=10]
+background_mode = 2
+background_sky = SubResource( 9 )
+ambient_light_color = Color( 0.243137, 0.243137, 0.619608, 1 )
+ambient_light_sky_contribution = 0.125
+
+[sub_resource type="CylinderMesh" id=11]
+top_radius = 0.5
+bottom_radius = 0.5
+height = 0.5
+radial_segments = 16
+rings = 0
+
+[sub_resource type="Shader" id=12]
+code = "shader_type spatial;
+render_mode blend_add,depth_draw_opaque,cull_back,diffuse_burley,specular_schlick_ggx,unshaded;
+
+uniform vec4 top_color:hint_color = vec4(1.0, 0.0, 0.0, 1.0);
+uniform vec4 bottom_color:hint_color = vec4(0.25, 0.0, 0.25, 1.0);
+
+void fragment() {
+	ALBEDO = mix(bottom_color.rgb, top_color.rgb, float(UV.y > 0.5));
+}
+"
+
+[sub_resource type="ShaderMaterial" id=13]
+render_priority = 1
+shader = SubResource( 12 )
+shader_param/top_color = Color( 1, 0, 0, 1 )
+shader_param/bottom_color = Color( 0.25, 0, 0.25, 1 )
+
+[node name="Terrain" type="MeshInstance"]
+material_override = SubResource( 2 )
+cast_shadow = 0
+script = ExtResource( 2 )
+terrain_data = SubResource( 3 )
+env_theme = ExtResource( 3 )
+num_chunks = 4
+chunk_size = 16
+
+[node name="Chunks" type="Spatial" parent="."]
+
+[node name="StaticBody" type="StaticBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4 )
+
+[node name="CollisionShape" type="CollisionShape" parent="StaticBody"]
+shape = SubResource( 4 )
+
+[node name="Xaxis" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 5 )
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="Zaxis" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -2.5 )
+mesh = SubResource( 7 )
+material/0 = SubResource( 8 )
+
+[node name="CameraNode" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 5, 5 )
+script = ExtResource( 4 )
+distance = 2.0
+min_distance = 1.0
+max_distance = 5.0
+min_pitch_angle = -85.0
+yaw = 135.0
+speed = 20.0
+
+[node name="Camera" type="Camera" parent="CameraNode"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2 )
+size = 10.0
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.5, 0.866026, 0, -0.866026, 0.5, 0, 5.97965, 0 )
+light_color = Color( 1, 0.976471, 0.913725, 1 )
+light_energy = 2.0
+light_specular = 0.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 10 )
+
+[node name="Cursor" type="Spatial" parent="."]
+
+[node name="MeshInstance" type="MeshInstance" parent="Cursor"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.25, 0.5 )
+cast_shadow = 0
+mesh = SubResource( 11 )
+material/0 = SubResource( 13 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+pause_mode = 2
+
+[node name="HUD" parent="CanvasLayer" instance=ExtResource( 1 )]

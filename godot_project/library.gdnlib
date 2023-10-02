@@ -1,0 +1,16 @@
+[general]
+
+singleton=false
+load_once=true
+symbol_prefix="godot_"
+reloadable=true
+
+[entry]
+
+OSX.64="res://../target/aarch64-apple-darwin/debug/liblil_leveler.dylib"
+Windows.64="res://../target/x86_64-pc-windows-gnu/debug/lil_leveler.dll"
+
+[dependencies]
+
+OSX.64=[  ]
+Windows.64=[  ]

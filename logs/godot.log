@@ -1,0 +1,8 @@
+Godot Engine v3.3.4.stable.official.faf3f883d - https://godotengine.org
+OpenGL ES 3.0 Renderer: Apple M1
+OpenGL ES Batching: ON
+ 
+Registered camera FaceTime HD Camera with id 1 position 0 at index 0
+**ERROR**: Condition "default_certs != __null" is true.
+   At: modules/mbedtls/crypto_mbedtls.cpp:201:load_default_certificates() - Condition "default_certs != __null" is true.
+Editing project: /Users/bailee/Documents/Godot/rust_projects/lil_leveler/plugin (::Users::bailee::Documents::Godot::rust_projects::lil_leveler::plugin)

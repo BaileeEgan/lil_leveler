@@ -1,0 +1,12 @@
+[package]
+name = "lil_leveler"
+version = "0.1.0"
+publish = false
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+
+[dependencies]
+gdnative = "0.9.3"

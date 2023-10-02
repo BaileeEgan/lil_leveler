@@ -1,0 +1,35 @@
+[gd_resource type="Resource" load_steps=4 format=2]
+
+[ext_resource path="res://themes/EnvironmentTheme.gd" type="Script" id=1]
+
+[sub_resource type="ProceduralSky" id=1]
+sky_top_color = Color( 0.592157, 0.364706, 0.611765, 1 )
+sky_horizon_color = Color( 0.890196, 0.670588, 0.498039, 1 )
+sky_curve = 0.25
+ground_bottom_color = Color( 0.592157, 0.364706, 0.611765, 1 )
+ground_horizon_color = Color( 0.890196, 0.670588, 0.498039, 1 )
+ground_curve = 0.35
+sun_curve = 0.0025
+texture_size = 1
+
+[sub_resource type="Environment" id=2]
+background_mode = 2
+background_sky = SubResource( 1 )
+ambient_light_color = Color( 0.505882, 0, 0.266667, 1 )
+ambient_light_sky_contribution = 0.5
+
+[resource]
+script = ExtResource( 1 )
+background_ambient_color = Color( 0.505882, 0, 0.266667, 1 )
+background_sky_color = Color( 0.294118, 0.192157, 0.407843, 1 )
+background_horizon_color = Color( 0.870588, 0.596078, 0.384314, 1 )
+light_color = Color( 1, 1, 1, 1 )
+mesh_main_color = Color( 0.427451, 0.364706, 0.419608, 1 )
+mesh_grid_color = Color( 0.615686, 0.388235, 0.509804, 1 )
+mesh_grid_width = 1.0
+mesh_show_grid = true
+cursor_top_color = Color( 0.517647, 0.4, 0.25098, 1 )
+cursor_bottom_color = Color( 0.631373, 0.266667, 0, 1 )
+environment = SubResource( 2 )
+do_load_from_env = false
+do_generate_env = false
